@@ -17,6 +17,7 @@ const (
 
 func main() {
 	port := flag.String("port", "9817", "listening port to expose metrics on")
+	listen := flag.String("listen", "127.0.0.1", "IP address to expose metrics on (0.0.0.0 = all interfaces)")
 	address := flag.String("address", exporter.DishAddress, "IP address and port to reach dish")
 	flag.Parse()
 
@@ -57,5 +58,7 @@ func main() {
 	})
 
 	http.Handle(metricsPath, promhttp.HandlerFor(r, promhttp.HandlerOpts{}))
-	log.Fatal(http.ListenAndServe(":"+*port, nil))
+	listenAddr := *listen + ":" + *port
+	log.Infof("listening on %s", listenAddr)
+	log.Fatal(http.ListenAndServe(listenAddr, nil))
 }
